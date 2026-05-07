@@ -79,7 +79,85 @@ namespace Backend.Controllers
                 } 
             });
         }
+ [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOtp([FromBody] ForgotPasswordDto model)
+        {
+            var user = await _context.Users
+                .Find(u => u.Email == model.Email)
+                .FirstOrDefaultAsync();
 
+            if (user == null)
+                return BadRequest("Email not found.");
+
+            // OTP generate karo
+            var otp = new Random().Next(100000, 999999).ToString();
+            var expiry = DateTime.UtcNow.AddMinutes(10);
+
+            // DB mein save karo
+            var update = Builders<Backend.Models.User>.Update
+                .Set(u => u.OtpCode, otp)
+                .Set(u => u.OtpExpiry, expiry);
+
+            await _context.Users.UpdateOneAsync(
+                u => u.Email == model.Email, update
+            );
+
+            // Email bhejo
+            await _emailHelper.SendOtpEmail(model.Email, otp);
+
+            return Ok(new { message = "OTP sent to your email." });
+        }
+
+        // Step 2: OTP verify karo
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto model)
+        {
+            var user = await _context.Users
+                .Find(u => u.Email == model.Email)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return BadRequest("Email not found.");
+
+            if (user.OtpCode != model.Otp)
+                return BadRequest("Invalid OTP.");
+
+            if (user.OtpExpiry < DateTime.UtcNow)
+                return BadRequest("OTP has expired. Please request a new one.");
+
+            return Ok(new { message = "OTP verified successfully." });
+        }
+
+        // Step 3: Naya password set karo
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
+        {
+            var user = await _context.Users
+                .Find(u => u.Email == model.Email)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return BadRequest("Email not found.");
+
+            if (user.OtpCode != model.Otp)
+                return BadRequest("Invalid OTP.");
+
+            if (user.OtpExpiry < DateTime.UtcNow)
+                return BadRequest("OTP has expired.");
+
+            // Password update karo, OTP clear karo
+            var update = Builders<Backend.Models.User>.Update
+                .Set(u => u.PasswordHash, model.NewPassword)
+                .Unset(u => u.OtpCode)
+                .Unset(u => u.OtpExpiry);
+
+            await _context.Users.UpdateOneAsync(
+                u => u.Email == model.Email, update
+            );
+
+            return Ok(new { message = "Password reset successful! You can now login." });
+        }
+        
         private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -103,5 +181,6 @@ namespace Backend.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        
     }
 }

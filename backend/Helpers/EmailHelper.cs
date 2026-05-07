@@ -49,5 +49,35 @@ namespace Backend.Helpers
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
         }
+        public async Task SendOtpEmail(string userEmail, string otp)
+        {
+    var appPassword = Environment.GetEnvironmentVariable("GMAIL_APP_PASSWORD");
+    if (string.IsNullOrEmpty(appPassword))
+        throw new Exception("CRITICAL: GMAIL_APP_PASSWORD is not set.");
+
+    var emailSettings = _config.GetSection("EmailSettings");
+
+    var message = new MimeMessage();
+    message.From.Add(new MailboxAddress(
+        emailSettings["SenderName"], 
+        emailSettings["SenderEmail"]
+    ));
+    message.To.Add(new MailboxAddress("User", userEmail));
+    message.Subject = "AI MediConnect - Password Reset OTP";
+    message.Body = new TextPart("plain")
+    {
+        Text = $"Your OTP for password reset is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nIf you did not request this, please ignore."
+    };
+
+    using var client = new SmtpClient();
+    await client.ConnectAsync(
+        emailSettings["SmtpServer"],
+        int.Parse(emailSettings["Port"] ?? "587"),
+        MailKit.Security.SecureSocketOptions.StartTls
+    );
+    await client.AuthenticateAsync(emailSettings["SenderEmail"], appPassword);
+    await client.SendAsync(message);
+    await client.DisconnectAsync(true);
+}
     }
 }

@@ -18,6 +18,9 @@ builder.Services.AddSwaggerGen();
 
 // Register MongoDB Context
 builder.Services.AddSingleton<MongoDbContext>();
+    
+// Register MongoDbService
+builder.Services.AddSingleton<MongoDbService>();
 
 // Register Email Helper
 builder.Services.AddScoped<EmailHelper>();
@@ -67,6 +70,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSingleton<MongoDbService>();
 var app = builder.Build();
 
 // --- 4. MIDDLEWARE PIPELINE ---

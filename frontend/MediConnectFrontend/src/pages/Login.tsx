@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
 import { loginUser } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);    
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -54,12 +56,19 @@ const Login = () => {
             <div className="relative mt-2">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input 
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                 placeholder="••••••••"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              
+              <span
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </span>
             </div>
           </div>
 
@@ -80,9 +89,16 @@ const Login = () => {
             </Link>
           </p>
         </div>
+        <div className="text-center mt-3">
+  <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+    Forgot Password?
+  </Link>
+</div>
       </div>
     </div>
+    
   );
 };
+
 
 export default Login;
