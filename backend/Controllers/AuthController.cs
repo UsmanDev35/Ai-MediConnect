@@ -89,11 +89,10 @@ namespace Backend.Controllers
             if (user == null)
                 return BadRequest("Email not found.");
 
-            // OTP generate karo
+            // OTP 
             var otp = new Random().Next(100000, 999999).ToString();
             var expiry = DateTime.UtcNow.AddMinutes(10);
 
-            // DB mein save karo
             var update = Builders<Backend.Models.User>.Update
                 .Set(u => u.OtpCode, otp)
                 .Set(u => u.OtpExpiry, expiry);
@@ -102,13 +101,13 @@ namespace Backend.Controllers
                 u => u.Email == model.Email, update
             );
 
-            // Email bhejo
+         
             await _emailHelper.SendOtpEmail(model.Email, otp);
 
             return Ok(new { message = "OTP sent to your email." });
         }
 
-        // Step 2: OTP verify karo
+        
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto model)
         {
@@ -128,7 +127,7 @@ namespace Backend.Controllers
             return Ok(new { message = "OTP verified successfully." });
         }
 
-        // Step 3: Naya password set karo
+        // Step 3: New password 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
         {
@@ -145,7 +144,7 @@ namespace Backend.Controllers
             if (user.OtpExpiry < DateTime.UtcNow)
                 return BadRequest("OTP has expired.");
 
-            // Password update karo, OTP clear karo
+            
             var update = Builders<Backend.Models.User>.Update
                 .Set(u => u.PasswordHash, model.NewPassword)
                 .Unset(u => u.OtpCode)
