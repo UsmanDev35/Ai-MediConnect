@@ -100,6 +100,7 @@ namespace Backend.Controllers
             await _context.Users.UpdateOneAsync(
                 u => u.Email == model.Email, update
             );
+            //test commit 
 
          
             await _emailHelper.SendOtpEmail(model.Email, otp);
