@@ -8,4 +8,5 @@ namespace Backend.DTOs
     public string Role { get; set; } = string.Empty; // Sent as a string like "Doctor"
     public int Age { get; set; } // New property
 }
+
 }

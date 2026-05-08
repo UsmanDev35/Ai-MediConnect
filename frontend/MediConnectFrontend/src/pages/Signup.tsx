@@ -93,17 +93,38 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // Talking to your .NET [HttpPost("register")]
-      const response = await axios.post('http://localhost:5020/api/auth/register', formData);
-      alert(response.data.message);
-    } catch (error: any) {
-      alert(error.response?.data || "Something went wrong");
-    }
-  };
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     // Talking to your .NET [HttpPost("register")]
+  //     const response = await axios.post('http://localhost:5020/api/auth/register', formData);
+  //     alert(response.data.message);
+  //   } catch (error: any) {
+  //     alert(error.response?.data || "Something went wrong");
+  //   }
+  // };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    // 1. Prepare the payload to match C# DTO perfectly
+    const payload = {
+      fullName: formData.fullName,
+      email: formData.email,
+      age: parseInt(formData.age), // Convert string "20" to number 20
+      role: formData.role,
+      password: "PlaceholderPassword123!" // Add this if your DTO requires it
+    };
 
+    // 2. Send the cleaned payload
+    const response = await axios.post('http://localhost:5020/api/auth/register', payload);
+    
+    alert(response.data.message);
+  } catch (error: any) {
+    // This will now show the SPECIFIC error message from your C# Exception
+    const errorMessage = error.response?.data?.message || error.response?.data || "Something went wrong";
+    alert(errorMessage);
+  }
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">
       {/* motion.div gives us the smooth entry animation */}
