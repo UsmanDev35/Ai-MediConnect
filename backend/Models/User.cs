@@ -1,14 +1,13 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-
 namespace Backend.Models
 {
     public enum UserRole { Admin, Doctor, Patient, AmbulanceDriver }
 
     public class User
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        // MongoDB needs a unique ID. 
+        // By naming it "Id", the driver automatically knows it's the primary key.
         public string? Id { get; set; }
 
         public string FullName { get; set; } = string.Empty;
@@ -20,4 +19,5 @@ namespace Backend.Models
         [BsonRepresentation(BsonType.String)]
         public UserRole Role { get; set; } 
     }
+
 }

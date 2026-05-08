@@ -2,6 +2,8 @@ using Backend.Data;
 using Backend.Models;
 using Backend.DTOs;
 using Backend.Helpers;
+using Backend.Interfaces;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Microsoft.IdentityModel.Tokens;
@@ -11,21 +13,31 @@ using System.Text;
 
 namespace Backend.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")] 
-    public class AuthController : ControllerBase
+   [ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly IAuthService _authService;
+    
+    // We inject the Interface, not the Service directly (Dependency Injection)
+    public AuthController(IAuthService authService)
     {
-        private readonly MongoDbContext _context;
-        private readonly EmailHelper _emailHelper;
-        private readonly IConfiguration _configuration;
+        _authService = authService;
+        
+    }
 
-        public AuthController(MongoDbContext context, EmailHelper emailHelper, IConfiguration configuration)
-        {
-            _context = context;
-            _emailHelper = emailHelper;
-            _configuration = configuration;
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto model)
+    {
+
+        try {
+            var password = await _authService.RegisterUserAsync(model);
+            return Ok(new { message = "Registration successful" });
+        } catch (Exception ex) {
+            return BadRequest(ex.Message);
         }
-
+    }
+}
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {

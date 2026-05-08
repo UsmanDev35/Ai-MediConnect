@@ -3,7 +3,8 @@ using Backend.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using Backend.Interfaces;
+using Backend.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 0. LOAD ENVIRONMENT VARIABLES ---
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
 
 // --- 1. INDUSTRIAL SERVICES SETUP ---
+builder.Services.AddScoped<IAuthService, AuthService>();
+// ---------------------------
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
