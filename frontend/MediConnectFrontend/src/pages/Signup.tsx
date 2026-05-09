@@ -813,7 +813,7 @@ import {
   Car, Briefcase, ChevronRight, Check, ArrowLeft, Award, Hash,
   Calendar, Heart,
 } from "lucide-react";
-
+import { registerUser } from "../services/authService";
 // ─── EXACT DASHBOARD PALETTE ─────────────────────────────────────────────────
 const C = {
   navyDeep:    "#060D18",  // dashboard dark bg
@@ -839,7 +839,7 @@ const C = {
 type Role = "Patient" | "Doctor" | "AmbulanceDriver";
 
 interface FormData {
-  fullName: string; email: string; password: string; city: string; age: string; role: Role;
+  fullName: string; email: string;  city: string; age: string; role: Role;
   pmdcNumber: string; specialization: string; experience: string;
   certificateImageUrl: string; _certificateFile: File | null;
   cnic: string; mobileNumber: string; drivingLicenseNumber: string;
@@ -955,6 +955,7 @@ const Field = ({ icon, label, name, value, type = "text", onChange, select, opti
 
 // ─── PASSWORD FIELD ──────────────────────────────────────────────────────────
 const PasswordField = ({ value, onChange, show, onToggle }: {
+  
   value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   show: boolean; onToggle: () => void;
 }) => {
@@ -1035,9 +1036,10 @@ const Signup = () => {
   const [step, setStep]               = useState<1 | 2>(1);
   const [showPass, setShowPass]       = useState(false);
   const [submitted, setSubmitted]     = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [fd, setFd] = useState<FormData>({
-    fullName: "", email: "", password: "", city: "", age: "", role: "Patient",
+    fullName: "", email: "", city: "", age: "", role: "Patient",
     pmdcNumber: "", specialization: "", experience: "", certificateImageUrl: "", _certificateFile: null,
     cnic: "", mobileNumber: "", drivingLicenseNumber: "", licenseImageUrl: "", _licenseFile: null,
     vehicleNumber: "", ambulanceType: "", driverExperience: "", hasOxygen: false, hasStretcher: false,
@@ -1101,7 +1103,7 @@ const Signup = () => {
                 <HeartPulse size={20} color="white" />
               </div>
               <div>
-                <p style={{ color: "white", fontSize: 16, fontWeight: 900, margin: 0, letterSpacing: "-0.3px" }}>MediCore</p>
+                <p style={{ color: "white", fontSize: 16, fontWeight: 900, margin: 0, letterSpacing: "-0.3px" }}>MediConnect</p>
                 <p style={{ color: C.navyMuted, fontSize: 11, margin: 0 }}>Enterprise Health OS</p>
               </div>
             </div>
@@ -1202,10 +1204,52 @@ const Signup = () => {
               ))}
             </div>
 
-             <form
-  onSubmit={(e) => {
+ <form
+  onSubmit={async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    try {
+
+      // await registerUser(
+      //   fd.fullName,
+      //   fd.email
+      // );
+
+      await registerUser({
+  fullName: fd.fullName,
+  email: fd.email,
+  age: Number(fd.age),
+  city: fd.city,
+  role: fd.role,
+
+  pmdcNumber: fd.pmdcNumber,
+  specialization: fd.specialization,
+ experience: Number(fd.experience),
+
+  cnic: fd.cnic,
+  mobileNumber: fd.mobileNumber,
+});
+
+      alert("Success! Check your email for your generated password.");
+
+      setSubmitted(true);
+
+    } catch (error: any) {
+
+      console.error("Full Error Object:", error);
+
+      if (error.response) {
+        console.error("Server Data:", error.response.data);
+        console.error("Server Status:", error.response.status);
+        console.log(error.response.data.errors)
+      }
+
+      alert("Registration failed. Open Console (F12) to see why!");
+
+    } finally {
+      setLoading(false);
+    }
   }}
 >
   <div
@@ -1361,12 +1405,7 @@ const Signup = () => {
         type="email"
       />
 
-      <PasswordField
-        value={fd.password}
-        onChange={handleChange}
-        show={showPass}
-        onToggle={() => setShowPass(!showPass)}
-      />
+     
 
       <div
         style={{
@@ -1521,24 +1560,26 @@ const Signup = () => {
     </AnimatePresence>
 
     {/* SUBMIT */}
-    <motion.button
-      type="submit"
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
-      style={{
-        width: "100%",
-        padding: "14px 0",
-        borderRadius: 10,
-        border: "none",
-        cursor: "pointer",
-        backgroundColor: C.crimson,
-        color: "white",
-        fontSize: 14,
-        fontWeight: 700,
-      }}
-    >
-      Create My Account
-    </motion.button>
+   <motion.button
+  type="submit"
+  disabled={loading}
+  whileHover={{ scale: 1.01 }}
+  whileTap={{ scale: 0.98 }}
+  style={{
+    width: "100%",
+    padding: "14px 0",
+    borderRadius: 10,
+    border: "none",
+    cursor: loading ? "not-allowed" : "pointer",
+    backgroundColor: C.crimson,
+    color: "white",
+    fontSize: 14,
+    fontWeight: 700,
+    opacity: loading ? 0.7 : 1,
+  }}
+>
+  {loading ? "Creating Account..." : "Create My Account"}
+</motion.button>
   </div>
 </form>
           </div>

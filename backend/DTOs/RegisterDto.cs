@@ -29,44 +29,42 @@
 
 // }
 
+// namespace Backend.DTOs
+// {
+//     public class RegisterDto
+//     {
+//         // ─── Common Fields ────────────────────────────────────────────────
+//         public string FullName { get; set; } = null!;
+//         public string Email { get; set; } = null!;
+//         public int Age { get; set; }
+//         public string Role { get; set; } = null!;          // "Patient" | "Doctor" | "AmbulanceDriver"
+//         public string City { get; set; } = null!;
+//         public string? Password { get; set; } 
 
-namespace Backend.DTOs
-{
-    public class RegisterDto
-    {
-        // ─── Common Fields ────────────────────────────────────────────────
-        public string FullName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public int Age { get; set; }
-        public string Role { get; set; } = null!;          // "Patient" | "Doctor" | "AmbulanceDriver"
-        public string City { get; set; } = null!;
-        public string Password { get; set; } = null!;
+//         // ─── Doctor Fields ────────────────────────────────────────────────
+//         public string? PmdcNumber { get; set; }
+//         public string? Specialization { get; set; }
+//         public int? Experience { get; set; }
 
-        // ─── Doctor Fields ────────────────────────────────────────────────
-        public string? PmdcNumber { get; set; }
-        public string? Specialization { get; set; }
-        public int? Experience { get; set; }
+//         // Uploaded via Cloudinary on the frontend first; only the resulting URL is sent here.
+//         // Future: POST /api/upload → returns { url } → client stores in this field.
+//         public string? CertificateImageUrl { get; set; }
 
-        // Uploaded via Cloudinary on the frontend first; only the resulting URL is sent here.
-        // Future: POST /api/upload → returns { url } → client stores in this field.
-        public string? CertificateImageUrl { get; set; }
+//         // ─── Ambulance Driver Fields ──────────────────────────────────────
+//         public string? Cnic { get; set; }                  // Pakistani CNIC: 35202-XXXXXXX-X
+//         public string? MobileNumber { get; set; }
+//         public string? DrivingLicenseNumber { get; set; }
 
-        // ─── Ambulance Driver Fields ──────────────────────────────────────
-        public string? Cnic { get; set; }                  // Pakistani CNIC: 35202-XXXXXXX-X
-        public string? MobileNumber { get; set; }
-        public string? DrivingLicenseNumber { get; set; }
+    
+//         public string? LicenseImageUrl { get; set; }
 
-        // Same Cloudinary pattern as CertificateImageUrl above.
-        public string? LicenseImageUrl { get; set; }
-
-        public string? VehicleNumber { get; set; }
-        public string? AmbulanceType { get; set; }         // e.g. "Basic Life Support (BLS)"
-        public int? DriverExperience { get; set; }         // years
-        public bool? HasOxygen { get; set; }
-        public bool? HasStretcher { get; set; }
-    }
-}
-
+//         public string? VehicleNumber { get; set; }
+//         public string? AmbulanceType { get; set; }         // e.g. "Basic Life Support (BLS)"
+//         public int? DriverExperience { get; set; }         // years
+//         public bool? HasOxygen { get; set; }
+//         public bool? HasStretcher { get; set; }
+//     }
+// }
 /*
  ┌─────────────────────────────────────────────────────────────────────────┐
  │  CLOUDINARY UPLOAD STRATEGY (future implementation)                     │
@@ -82,3 +80,40 @@ namespace Backend.DTOs
  │  and lets you validate/resize images server-side before storing them.   │
  └─────────────────────────────────────────────────────────────────────────┘
 */
+
+
+namespace Backend.DTOs
+{
+    public class RegisterDto
+    {
+        // ─── Common Fields ────────────────────────────────────────────────
+        public string FullName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public int Age { get; set; }
+
+        public string Role { get; set; } = null!;
+        public string City { get; set; } = null!;
+
+        // REMOVE PASSWORD REQUIREMENT
+        public string? Password { get; set; }
+
+        // ─── Doctor Fields ────────────────────────────────────────────────
+        public string? PmdcNumber { get; set; }
+        public string? Specialization { get; set; }
+        public int? Experience { get; set; }
+        public string? CertificateImageUrl { get; set; }
+
+        // ─── Ambulance Driver Fields ──────────────────────────────────────
+        public string? Cnic { get; set; }
+        public string? MobileNumber { get; set; }
+        public string? DrivingLicenseNumber { get; set; }
+        public string? LicenseImageUrl { get; set; }
+
+        public string? VehicleNumber { get; set; }
+        public string? AmbulanceType { get; set; }
+        public int? DriverExperience { get; set; }
+
+        public bool? HasOxygen { get; set; }
+        public bool? HasStretcher { get; set; }
+    }
+}

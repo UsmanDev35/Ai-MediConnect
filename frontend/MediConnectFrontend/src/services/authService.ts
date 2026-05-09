@@ -2,9 +2,31 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5020/api/auth';
 
+
+interface RegisterData {
+  fullName: string;
+  email: string;
+  age: number;
+  city: string;
+  role: string;
+
+  pmdcNumber?: string;
+  specialization?: string;
+  experience?: number;
+
+  cnic?: string;
+  mobileNumber?: string;
+}
+
 // Registration function
-export const registerUser = async (fullName: string, email: string) => {
-  const response = await axios.post(`${API_URL}/register`, { fullName, email });
+// export const registerUser = async (fullName: string, email: string) => {
+//   const response = await axios.post(`${API_URL}/register`, { fullName, email });
+//   return response.data;
+// };
+
+
+export const registerUser = async (userData: RegisterData) => {
+  const response = await axios.post(`${API_URL}/register`, userData);
   return response.data;
 };
 
