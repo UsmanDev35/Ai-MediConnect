@@ -11,19 +11,47 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);    
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await loginUser(email, password);
-      // If successful, move to the dashboard (we will create this later)
-      navigate('/dashboard');
-    } catch (error) {
-      alert("Invalid credentials. Please check your email for the generated password!");
-    } finally {
-      setLoading(false);
+  // const handleLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     await loginUser(email, password);
+  //     // If successful, move to the dashboard (we will create this later)
+  //     navigate('/dashboard');
+  //   } catch (error) {
+  //     alert("Invalid credentials. Please check your email for the generated password!");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await loginUser(email, password);
+    
+    // User info bhi save karo role check ke liye
+    localStorage.setItem('user', JSON.stringify(response.user));
+
+    // Role dekh ke sahi dashboard pe bhejo
+    const role = response.user.role.toLowerCase();
+    if (role === 'patient') {
+      navigate('/patient/dashboard');
+    } else if (role === 'admin') {
+      navigate('/admin/dashboard');
+    } else if (role === 'doctor') {
+      navigate('/doctor/dashboard');
+    } else {
+      alert('Unknown role. Please contact support.');
     }
-  };
+
+  } catch (error) {
+    alert("Invalid credentials. Please check your email for the generated password!");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
