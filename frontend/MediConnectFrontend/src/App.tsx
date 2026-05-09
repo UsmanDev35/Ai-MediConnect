@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
  import ForgotPassword from'./pages/ForgetPassword';
+ import MedicalAdminDashboard from './pages/admin/AdmmionDashboard';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Login />} />
          <Route path="/forgot-password" element={<ForgotPassword />} />
+         <Route path="/admin/dashboard" element={<MedicalAdminDashboard />} />
         </Routes>
       </div>
     </Router>

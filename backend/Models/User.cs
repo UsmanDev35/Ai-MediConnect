@@ -17,7 +17,7 @@ namespace Backend.Models
         public string PasswordHash { get; set; } = string.Empty;
         public string? OtpCode { get; set; }
         public DateTime? OtpExpiry { get; set; }
-
+    
         [BsonRepresentation(BsonType.String)]
         public UserRole Role { get; set; } 
     }
